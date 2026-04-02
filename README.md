@@ -152,7 +152,7 @@ This portal supports:
 
 | Screen | Preview |
 |---|---|
-| Sign in | ![Sign in](docs/ui/01-login.png) |
+| Sign in (main landing) | ![Sign in — main landing](docs/ui/01-login-alt.png) |
 | Register | ![Register](docs/ui/02-register.png) |
 
 ### Admin Workflows

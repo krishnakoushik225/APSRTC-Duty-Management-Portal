@@ -4,7 +4,8 @@ Add product screenshots here and reference them from the root `README.md`.
 
 Suggested naming:
 
-- `01-login.png`
+- `01-login-alt.png` — primary landing / sign-in (README Authentication table, first row)
+- `01-login.png` — optional alternate sign-in layout
 - `02-register.png`
 - `03-admin-dashboard.png`
 - `04-add-user.png`
