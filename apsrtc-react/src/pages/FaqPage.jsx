@@ -51,7 +51,7 @@ export default function FAQPage() {
         {faqList.map((faq, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl shadow-md border border-gray-100 transition hover:shadow-lg"
+            className="bg-surface-elevated rounded-2xl shadow-md border border-slate-300/45 transition hover:shadow-lg"
           >
             <button
               onClick={() => toggleFAQ(index)}

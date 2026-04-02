@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { User, Lock } from "lucide-react";
+import { User, Lock, ArrowRight, Zap } from "lucide-react";
 import Spinner from "../components/Spinner";
+import Button from "../components/Button";
+import { getErrorMessage } from "../api/errorHandler";
+import AuthPortalLayout, {
+  AuthPortalMobileBrand,
+  AuthPortalPanel,
+} from "../components/AuthPortalLayout";
 
 export default function Login() {
   const [creds, setCreds] = useState({ id: "", password: "" });
@@ -13,6 +19,12 @@ export default function Login() {
 
   const submit = async (e) => {
     e.preventDefault();
+
+    if (!creds.id || !creds.password) {
+      toast.warning("Please enter both employee ID/email and password");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -20,110 +32,132 @@ export default function Login() {
       const role = sessionStorage.getItem("role");
       navigate(role === "ADMIN" ? "/admin/dashboard" : "/user/dashboard");
     } catch (err) {
-      const message =
-        err?.response?.data?.message || err?.response?.data || "Login failed";
-      toast.error(message);
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetch("https://apsrtc-service.onrender.com/health")
-    .catch(() => {
+    fetch("https://apsrtc-service.onrender.com/health").catch(() => {
       console.log("Something went wrong while requesting the health check!");
     });
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 -my-10">
-      <div className="w-full max-w-md space-y-8">
-        {/* Logo + Heading */}
-        <div className="text-center space-y-3">
-          <h1 className="text-4xl font-bold text-gray-900">Welcome Back</h1>
-          <p className="text-gray-600 text-base">
-            Sign in to access your dashboard
-          </p>
-        </div>
+    <AuthPortalLayout variant="login">
+      <div className="w-full max-w-md">
+        <AuthPortalMobileBrand variant="login" />
 
-        {/* Login Card */}
-        <div className="bg-white shadow rounded-2xl p-8 space-y-6">
+        <AuthPortalPanel className="p-8 sm:p-10 space-y-8">
+          <div className="hidden lg:block space-y-1">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">
+              Sign in
+            </p>
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
+              Access your dashboard
+            </h2>
+            <p className="text-sm text-slate-600">
+              Use your employee ID or work email.
+            </p>
+          </div>
+
           <form onSubmit={submit} className="space-y-6">
-            {/* Employee ID */}
-            <div>
-              <label className="text-sm font-medium text-gray-700">
-                Employee ID
+            <div className="relative group">
+              <label className="text-xs font-bold text-slate-700 mb-2.5 block uppercase tracking-wider">
+                Employee ID / Email
               </label>
-              <div className="mt-2 flex items-center gap-3 bg-gray-50 px-3 py-2 rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-                <User className="h-5 w-5 text-gray-500" />
+              <div className="field-wrap relative group">
+                <User
+                  className="h-5 w-5 text-blue-600 flex-shrink-0"
+                  strokeWidth={2}
+                />
                 <input
                   required
                   value={creds.id}
-                  placeholder="Enter your employee ID"
+                  placeholder="2021BCS01 or your@email.com"
                   onChange={(e) => setCreds({ ...creds, id: e.target.value })}
-                  className="w-full bg-transparent outline-none text-gray-800"
+                  autoComplete="username"
+                  className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400 text-base font-medium"
                 />
               </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-medium text-gray-700">
+            <div className="relative group">
+              <div className="flex items-center justify-between mb-2.5">
+                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                   Password
                 </label>
-                <a
-                  href="/forgot-password"
-                  className="text-sm text-blue-700 hover:text-blue-500 font-medium"
+                <Link
+                  to="/forgot-password"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors hover:underline"
                 >
                   Forgot password?
-                </a>
+                </Link>
               </div>
 
-              <div className="flex items-center gap-3 bg-gray-50 px-3 py-2 rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-                <Lock className="h-5 w-5 text-gray-500" />
+              <div className="field-wrap relative group">
+                <Lock
+                  className="h-5 w-5 text-blue-600 flex-shrink-0"
+                  strokeWidth={2}
+                />
                 <input
                   required
                   type="password"
                   value={creds.password}
-                  placeholder="Enter your password"
+                  placeholder="••••••••••"
                   onChange={(e) =>
                     setCreds({ ...creds, password: e.target.value })
                   }
-                  className="w-full bg-transparent outline-none text-gray-800"
+                  autoComplete="current-password"
+                  className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400 text-base font-medium tracking-wide"
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
-            <button
+            <Button
               disabled={loading}
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:cursor-pointer"
+              variant="primary"
+              size="lg"
+              className="w-full"
+              icon={<Zap size={20} strokeWidth={2} />}
             >
-              {loading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <span>Signing in...</span>
-                  <Spinner />
-                </div>
-              ) : (
-                "Sign in"
-              )}
-            </button>
+              {loading ? "Signing in..." : "Sign in"}
+              {loading && <Spinner />}
+            </Button>
           </form>
 
-          {/* Register Link */}
-          <p className="text-center text-gray-600 text-sm">
-            Don’t have an account?{" "}
-            <a
-              href="/register"
-              className="text-blue-700 hover:underline font-medium"
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-3 bg-surface-elevated/95 text-slate-500 font-semibold">
+                or
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-center text-sm text-slate-600 font-medium">
+              New to the portal?
+            </p>
+            <Link
+              to="/register"
+              className="w-full btn-success py-3.5 text-base inline-flex items-center justify-center gap-2"
             >
-              Create one
-            </a>
-          </p>
-        </div>
+              Create an account
+              <ArrowRight className="h-5 w-5" strokeWidth={2.5} />
+            </Link>
+          </div>
+        </AuthPortalPanel>
+
+        <p className="text-center text-xs text-slate-300/95 mt-8 max-w-sm mx-auto leading-relaxed">
+          Protected access. Sessions may be audited for security compliance.
+        </p>
       </div>
-    </div>
+    </AuthPortalLayout>
   );
 }

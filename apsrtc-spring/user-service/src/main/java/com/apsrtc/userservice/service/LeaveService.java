@@ -1,6 +1,7 @@
 package com.apsrtc.userservice.service;
 
 import com.apsrtc.userservice.dto.LeaveResponseDTO;
+import com.apsrtc.userservice.exception.LeaveNotFoundException;
 import com.apsrtc.userservice.model.Leave;
 import com.apsrtc.userservice.repository.LeaveRepository;
 import com.apsrtc.userservice.repository.UserRepository;
@@ -31,8 +32,8 @@ public class LeaveService {
     @Transactional
     public void updateLeaveStatus(Long id, String status) {
         Leave leave = leaveRepo.findByLeaveId(id);
-        if(leave == null) {
-            throw new RuntimeException("Leave id not found!");
+        if (leave == null) {
+            throw new LeaveNotFoundException("Leave id not found: " + id);
         }
         if(status.equals("APPROVED")) {
             leave.setStatus(status);

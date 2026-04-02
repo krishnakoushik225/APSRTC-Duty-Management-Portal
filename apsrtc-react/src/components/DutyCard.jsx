@@ -19,20 +19,20 @@ export default function DutyCard({
   emptyMessage,
 }) {
   return (
-    <div className="bg-white rounded-xl shadow p-6">
+    <div className="card p-8 hover-lift">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-            <Icon className="h-5 w-5 text-blue-700" />
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <div className="h-12 w-12 rounded-2xl bg-gradient-to-r from-brand-500 to-brand-600 flex items-center justify-center ring-2 ring-brand-100 shadow-lg">
+            <Icon className="h-6 w-6 text-white" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-2xl font-bold text-gray-900">{title}</h3>
         </div>
 
         {!loading && !error && (
           <span
-            className={`px-3 py-1 rounded text-sm ${
-              duty ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"
+            className={`px-4 py-2 rounded-2xl text-sm font-bold shadow-md ${
+              duty ? "bg-gradient-to-r from-emerald-50 to-emerald-100 text-emerald-700 border border-emerald-200" : "bg-gradient-to-r from-slate-100 to-slate-200 text-slate-600 border border-slate-300"
             }`}
           >
             {duty ? statusLabel : "—"}
@@ -53,7 +53,7 @@ export default function DutyCard({
 
       {/* Empty */}
       {!loading && !error && !duty && (
-        <p className="text-center text-gray-500 py-6">{emptyMessage}</p>
+        <p className="text-center text-slate-500 py-6">{emptyMessage}</p>
       )}
 
       {/* Data */}

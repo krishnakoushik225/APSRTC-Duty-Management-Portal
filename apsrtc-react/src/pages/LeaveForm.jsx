@@ -50,77 +50,80 @@ export default function LeaveForm() {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-white p-6 sm:p-8 rounded-2xl shadow">
-      <h2 className="text-2xl font-semibold text-center mb-6">
-        Apply for Leave
-      </h2>
+    <div className="min-h-screen p-6">
+      <div className="max-w-2xl mx-auto mt-6 card p-6 sm:p-8 animate-fade-in">
+      <div className="text-center mb-8">
+        <p className="inline-flex items-center rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-semibold text-blue-700 mb-3">
+          Leave Management
+        </p>
+        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+          Apply for Leave
+        </h2>
+      </div>
 
       <form onSubmit={submit} className="space-y-6">
         {/* NAME FIELD */}
         <div>
-          <label className="text-sm font-medium text-gray-800 mb-1 block">
+          <label className="text-sm font-semibold text-slate-700 mb-1 block">
             Name
           </label>
 
-          <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="field-wrap">
+            <User className="text-blue-600 w-5 h-5" />
 
             <input
               type="text"
               value={form.name}
               disabled
-              className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-600 
-                       focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none"
+              className="w-full bg-transparent outline-none text-slate-500 cursor-not-allowed"
             />
           </div>
         </div>
 
         {/* USER ID FIELD */}
         <div>
-          <label className="text-sm font-medium text-gray-800 mb-1 block">
+          <label className="text-sm font-semibold text-slate-700 mb-1 block">
             User ID
           </label>
 
-          <div className="relative">
-            <ClipboardList className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="field-wrap">
+            <ClipboardList className="text-blue-600 w-5 h-5" />
 
             <input
               type="text"
               value={form.userId}
               disabled
-              className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-600 
-                       focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none"
+              className="w-full bg-transparent outline-none text-slate-500 cursor-not-allowed"
             />
           </div>
         </div>
 
         {/* EMAIL FIELD */}
         <div>
-          <label className="text-sm font-medium text-gray-800 mb-1 block">
+          <label className="text-sm font-semibold text-slate-700 mb-1 block">
             Email
           </label>
 
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <div className="field-wrap">
+            <Mail className="text-blue-600 w-5 h-5" />
 
             <input
               type="email"
               value={form.email}
               disabled
-              className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-600 
-                       focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none"
+              className="w-full bg-transparent outline-none text-slate-500 cursor-not-allowed"
             />
           </div>
         </div>
 
         {/* REASON FIELD */}
         <div>
-          <label className="text-sm font-medium text-gray-800 mb-1 block">
+          <label className="text-sm font-semibold text-slate-700 mb-1 block">
             Reason
           </label>
 
-          <div className="relative">
-            <FileText className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
+          <div className="field-wrap items-start">
+            <FileText className="text-blue-600 w-5 h-5 mt-1" />
 
             <textarea
               name="reason"
@@ -129,8 +132,7 @@ export default function LeaveForm() {
               placeholder="Explain your reason for the leave..."
               rows="3"
               required
-              className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-xl 
-                       focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none"
+              className="w-full bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
             />
           </div>
         </div>
@@ -138,12 +140,12 @@ export default function LeaveForm() {
         {/* DATE FIELDS */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm font-medium text-gray-800 mb-1 block">
+            <label className="text-sm font-semibold text-slate-700 mb-1 block">
               From Date
             </label>
 
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <div className="field-wrap">
+              <Calendar className="text-blue-600 w-5 h-5" />
               <input
                 type="date"
                 name="fromDate"
@@ -151,19 +153,18 @@ export default function LeaveForm() {
                 value={form.fromDate}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-xl 
-                         focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none"
+                className="w-full bg-transparent outline-none text-slate-900"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-800 mb-1 block">
+            <label className="text-sm font-semibold text-slate-700 mb-1 block">
               To Date
             </label>
 
-            <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <div className="field-wrap">
+              <Calendar className="text-blue-600 w-5 h-5" />
               <input
                 type="date"
                 name="toDate"
@@ -171,8 +172,7 @@ export default function LeaveForm() {
                 value={form.toDate}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-3 py-3 bg-gray-50 border border-gray-300 rounded-xl 
-                         focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none"
+                className="w-full bg-transparent outline-none text-slate-900"
               />
             </div>
           </div>
@@ -181,11 +181,12 @@ export default function LeaveForm() {
         {/* SUBMIT BUTTON */}
         <button
           type="submit"
-          className="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition"
+          className="w-full btn-primary py-3"
         >
           {isLoading ? "Submitting Leave..." : "Submit Leave"}
         </button>
       </form>
+      </div>
     </div>
   );
 }

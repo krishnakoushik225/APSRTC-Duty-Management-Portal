@@ -6,7 +6,7 @@ export default function Departments() {
       <div className="relative px-6 lg:px-5">
         <div className="mx-auto my-20 space-y-24">
           {/* MANAGEMENT */}
-          <section className="bg-white py-12 rounded-xl shadow-sm">
+          <section className="bg-surface-elevated py-12 rounded-xl shadow-sm border border-slate-300/35">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="max-w-2xl mx-auto text-center">
                 <h2 className="text-3xl font-semibold tracking-tight text-blue-600 sm:text-4xl">
@@ -20,7 +20,7 @@ export default function Departments() {
               </div>
 
               <div className="mx-auto mt-6 max-w-2xl lg:mx-0 lg:flex lg:max-w-none gap-10">
-                <div className="p-8 bg-white rounded-3xl ring-1 ring-gray-200 shadow-sm flex-1">
+                <div className="p-8 bg-surface rounded-3xl ring-1 ring-slate-300/50 shadow-sm flex-1">
                   <h3 className="text-2xl font-bold tracking-tight text-blue-700">
                     Management Department
                   </h3>
@@ -39,7 +39,7 @@ export default function Departments() {
                   </ul>
                 </div>
 
-                <div className="p-6 bg-gray-50 rounded-3xl ring-1 ring-gray-200 w-full lg:max-w-md flex-shrink-0 shadow-sm">
+                <div className="p-6 bg-surface-inset/50 rounded-3xl ring-1 ring-slate-300/50 w-full lg:max-w-md flex-shrink-0 shadow-sm">
                   <div className="mx-auto max-w-xs text-center">
                     <img
                       src="/images/management.webp"
@@ -60,10 +60,10 @@ export default function Departments() {
           </section>
 
           {/* EMPLOYEE */}
-          <section className="bg-white py-12 rounded-xl shadow-sm">
+          <section className="bg-surface-elevated py-12 rounded-xl shadow-sm border border-slate-300/35">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mx-auto mt-5 max-w-2xl lg:mx-0 lg:flex lg:max-w-none gap-10">
-                <div className="p-6 bg-gray-50 rounded-3xl ring-1 ring-gray-200 w-full lg:max-w-md flex-shrink-0 shadow-sm">
+                <div className="p-6 bg-surface-inset/50 rounded-3xl ring-1 ring-slate-300/50 w-full lg:max-w-md flex-shrink-0 shadow-sm">
                   <div className="mx-auto max-w-xs text-center">
                     <img
                       src="/images/employee.webp"
@@ -80,7 +80,7 @@ export default function Departments() {
                   </div>
                 </div>
 
-                <div className="p-8 flex-1 bg-white rounded-3xl ring-1 ring-gray-200 shadow-sm">
+                <div className="p-8 flex-1 bg-surface rounded-3xl ring-1 ring-slate-300/50 shadow-sm">
                   <h3 className="text-2xl font-bold tracking-tight text-blue-700">
                     Employee Department
                   </h3>
@@ -102,10 +102,10 @@ export default function Departments() {
           </section>
 
           {/* MEDICAL */}
-          <section className="bg-white py-12 rounded-xl shadow-sm">
+          <section className="bg-surface-elevated py-12 rounded-xl shadow-sm border border-slate-300/35">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mx-auto mt-12 max-w-2xl lg:mx-0 lg:flex lg:max-w-none gap-10">
-                <div className="p-8 flex-1 bg-white rounded-3xl ring-1 ring-gray-200 shadow-sm">
+                <div className="p-8 flex-1 bg-surface rounded-3xl ring-1 ring-slate-300/50 shadow-sm">
                   <h3 className="text-2xl font-bold tracking-tight text-blue-700">
                     Medical Department
                   </h3>
@@ -123,7 +123,7 @@ export default function Departments() {
                   </ul>
                 </div>
 
-                <div className="p-6 bg-gray-50 rounded-3xl ring-1 ring-gray-200 w-full lg:max-w-md flex-shrink-0 shadow-sm">
+                <div className="p-6 bg-surface-inset/50 rounded-3xl ring-1 ring-slate-300/50 w-full lg:max-w-md flex-shrink-0 shadow-sm">
                   <div className="mx-auto max-w-xs text-center">
                     <img
                       src="/images/medical.avif"

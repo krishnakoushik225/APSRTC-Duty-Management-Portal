@@ -1,12 +1,11 @@
 package com.apsrtc.userservice.security;
 
 import com.apsrtc.userservice.dto.UserResponseDTO;
-import com.apsrtc.userservice.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -16,27 +15,30 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final UserRepository userRepo;
+    private final Key key;
+    private final long expirationMs;
 
-    public JwtUtil(UserRepository userRepo) {
-        this.userRepo = userRepo;
+    public JwtUtil(
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.expiration-ms:86400000}") long expirationMs) {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException(
+                    "jwt.secret must be at least 32 bytes (characters) for HS256; set JWT_SECRET in production.");
+        }
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        this.expirationMs = expirationMs;
     }
 
-    private final String SECRET = "my-strong-secret-key-which-is-hard-to-decode";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
-
-    // Generate token with user ID and role
     public String generateToken(UserResponseDTO dto) {
         return Jwts.builder()
                 .setSubject(dto.getId())
                 .claim("role", dto.getCategory())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24h expiry
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // Extract user ID from token
     public String getUserIdFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -46,7 +48,6 @@ public class JwtUtil {
                 .getSubject();
     }
 
-    // Extract role from token
     public String getUserRoleFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -56,11 +57,14 @@ public class JwtUtil {
                 .get("role", String.class);
     }
 
-    public Claims getClaims(String header) {
-        if (header == null || !header.startsWith("Bearer ")) {
-            return (Claims) ResponseEntity.badRequest().body("No token provided");
+    /**
+     * Parses a Bearer token from the Authorization header. Never returns a non-claims value.
+     */
+    public Claims getClaims(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Authorization header must be a Bearer token");
         }
-        String token = header.substring(7);
+        String token = authorizationHeader.substring(7);
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

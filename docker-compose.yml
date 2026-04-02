@@ -1,0 +1,50 @@
+# Local full-stack backend test: Postgres + user-service (Spring Boot, dev profile).
+# Frontend still runs on your machine: npm start in apsrtc-react (API at http://localhost:5251).
+#
+# Usage from repo root (APSRTC/):
+#   docker compose up --build
+#
+# Database only (then run Spring locally with DB_URL=jdbc:postgresql://localhost:5432/apsrtc):
+#   docker compose up postgres -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: apsrtc
+      POSTGRES_PASSWORD: apsrtc
+      POSTGRES_DB: apsrtc
+    volumes:
+      - apsrtc-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apsrtc -d apsrtc"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  user-service:
+    build:
+      context: ./apsrtc-spring
+      dockerfile: Dockerfile
+    environment:
+      # Dev: no Redis required; Flyway creates tables on first start
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/apsrtc
+      DB_USERNAME: apsrtc
+      DB_PASSWORD: apsrtc
+      JWT_SECRET: "local-docker-secret-at-least-32-characters-long!!"
+      MAIL_USERNAME: noreply@local.test
+      MAIL_PASSWORD: local
+      # Avoid OTLP metrics export to a collector you don't have in compose
+      MANAGEMENT_OTLP_METRICS_EXPORT_ENABLED: "false"
+      MANAGEMENT_HEALTH_MAIL_ENABLED: "false"
+      PORT: "8080"
+      CORS_ORIGINS: http://localhost:3000
+    ports:
+      - "5251:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  apsrtc-pgdata:

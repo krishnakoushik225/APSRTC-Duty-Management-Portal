@@ -73,7 +73,7 @@ public class AdminController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/duties/add")
     public ResponseEntity<Duty> addDuty(@Validated @RequestBody Duty dutyData,
-                                         @AuthenticationPrincipal String adminId) throws Exception {
+                                         @AuthenticationPrincipal String adminId) {
         Duty duty = dutyService.addDuty(dutyData, adminId);
         return ResponseEntity.status(HttpStatus.CREATED).body(duty);
     }

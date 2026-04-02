@@ -1,0 +1,4 @@
+Bundled night background (see src/assets/app-shell-night.jpg):
+"A bus parked at a bus stop at night" by Daniel Akselrod
+https://unsplash.com/photos/okHA3mh7lWY
+(Unsplash License — free to use)

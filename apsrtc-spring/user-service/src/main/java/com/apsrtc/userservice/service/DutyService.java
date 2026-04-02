@@ -33,7 +33,7 @@ public class DutyService {
     private final LeaveRepository leaveRepo;
     private final LoginHistoryMapper loginHistoryMapper;
 
-    public Duty addDuty(Duty dutyData, String adminId) throws Exception {
+    public Duty addDuty(Duty dutyData, String adminId) {
         User user = userRepo.findById(adminId)
                 .orElseThrow(() -> new UserOperationException("User not found with ID: " + adminId));
         // Check if duty already exists

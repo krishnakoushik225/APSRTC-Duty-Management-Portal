@@ -32,20 +32,41 @@ export default function AddUser({ admin }) {
     try {
       setLoading(true);
       await apiClient.addUser(userData);
-      setLoading(false);
+      toast.success("User added successfully!");
+      setUserData({
+        name: "",
+        email: "",
+        id: "",
+        contactNumber: "",
+        category: "",
+        district: admin.district,
+        depo: admin.depo,
+        password: "",
+        createdDate: "",
+      });
     } catch (err) {
-      toast.error(err.response.data.message || err.response?.data);
+      const payload = err?.response?.data;
+      const message =
+        payload?.message ||
+        payload?.error ||
+        (typeof payload === "string" ? payload : Object.values(payload || {})[0]) ||
+        "Failed to add user";
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8 border border-gray-200 my-10">
+    <div className="min-h-screen p-6">
+      <div className="w-full max-w-xl mx-auto">
+        <div className="card p-10">
         {/* TITLE */}
         <div className="text-center mb-8">
-          <p className="text-gray-800 font-semibold text-2xl mt-1">
+          <p className="text-slate-900 font-extrabold tracking-tight text-3xl mt-1">
             Create new APSRTC account
           </p>
+          <p className="text-slate-500 font-medium mt-2">Add an employee under your depot.</p>
         </div>
 
         {/* FORM */}
@@ -121,7 +142,7 @@ export default function AddUser({ admin }) {
           <button
             disabled={loading}
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:cursor-pointer"
+            className="w-full btn-primary py-3 text-base"
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
@@ -133,6 +154,7 @@ export default function AddUser({ admin }) {
             )}
           </button>
         </form>
+        </div>
       </div>
     </div>
   );
@@ -150,15 +172,15 @@ export function InputRow({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
 
-      <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
-        <Icon className="h-5 w-5 text-gray-500" />
+      <div className="field-wrap">
+        <Icon className="h-5 w-5 text-slate-500" />
         {type === "select" ? (
           <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-gray-900"
+            className="flex-1 bg-transparent outline-none text-slate-900"
             required
           >
             <option value="">Select Role</option>
@@ -175,7 +197,7 @@ export function InputRow({
             placeholder={placeholder}
             readOnly={readonly}
             onChange={(e) => onChange(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-gray-900"
+            className="flex-1 bg-transparent outline-none text-slate-900 placeholder:text-slate-400"
             required
           />
         )}

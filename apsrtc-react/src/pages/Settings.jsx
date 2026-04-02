@@ -27,29 +27,26 @@ export default function Settings() {
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className="min-h-screen px-6 py-12 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md card p-8 animate-fade-in">
         <img
           alt="Your Company"
           src="/images/logo.png"
-          className="mx-auto h-16 w-16 w-auto"
+          className="mx-auto h-16 w-16"
         />
-        <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight">
+        <h2 className="mt-8 text-center text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
           Change the password
         </h2>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={submit} method="POST" className="space-y-6">
+        <form onSubmit={submit} method="POST" className="space-y-6 mt-8">
           <div>
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700 mb-2">
+              <label className="text-sm font-semibold text-slate-700 mb-2">
                 Current Password
               </label>
             </div>
 
-            <div className="flex items-center gap-3 bg-gray-50 px-3 py-2 rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-              <Lock className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap">
+              <Lock className="h-5 w-5 text-blue-600" />
               <input
                 required
                 type="password"
@@ -58,19 +55,19 @@ export default function Settings() {
                 onChange={(e) =>
                   setCreds({ ...creds, currentPassword: e.target.value })
                 }
-                className="w-full bg-transparent outline-none text-gray-800"
+                className="w-full bg-transparent outline-none text-slate-900"
               />
             </div>
           </div>
           <div>
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700 mb-2">
+              <label className="text-sm font-semibold text-slate-700 mb-2">
                 New Password
               </label>
             </div>
 
-            <div className="flex items-center gap-3 bg-gray-50 px-3 py-2 rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-              <KeyRound className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap">
+              <KeyRound className="h-5 w-5 text-blue-600" />
               <input
                 required
                 type="password"
@@ -79,19 +76,19 @@ export default function Settings() {
                 onChange={(e) =>
                   setCreds({ ...creds, newPassword: e.target.value })
                 }
-                className="w-full bg-transparent outline-none text-gray-800"
+                className="w-full bg-transparent outline-none text-slate-900"
               />
             </div>
           </div>
           <div>
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700 mb-2">
-                Current Password
+              <label className="text-sm font-semibold text-slate-700 mb-2">
+                Confirm Password
               </label>
             </div>
 
-            <div className="flex items-center gap-3 bg-gray-50 px-3 py-2 rounded-lg border border-gray-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-              <KeyRound className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap">
+              <KeyRound className="h-5 w-5 text-blue-600" />
               <input
                 required
                 type="password"
@@ -100,14 +97,14 @@ export default function Settings() {
                 onChange={(e) =>
                   setCreds({ ...creds, confirmPassword: e.target.value })
                 }
-                className="w-full bg-transparent outline-none text-gray-800"
+                className="w-full bg-transparent outline-none text-slate-900"
               />
             </div>
           </div>
           <div>
             <button
               type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              className="w-full btn-primary py-3"
             >
               {isLoading ? "Changing Password ..." : "Submit"}
             </button>

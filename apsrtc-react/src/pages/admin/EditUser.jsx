@@ -19,7 +19,7 @@ export default function EditUser() {
   const { user } = state || {};
   const { userId } = useParams();
 
-  const { data: userDetails } = useQuery({
+  useQuery({
     queryKey: ["get-user-by-id", userId],
     queryFn: () => apiClient.getUserDetails(userId),
     enabled: !!userId,
@@ -49,11 +49,11 @@ export default function EditUser() {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
-      <div className="w-full max-w-xl bg-white rounded-2xl shadow-lg p-8 border border-gray-200 my-10">
+    <div className="min-h-screen p-6 flex items-center justify-center">
+      <div className="w-full max-w-xl card p-10 my-10 animate-fade-in">
         {/* TITLE */}
         <div className="text-center mb-8">
-          <p className="text-gray-800 font-semibold text-2xl mt-1">
+          <p className="text-slate-900 font-bold text-3xl bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
             Edit User Details
           </p>
         </div>
@@ -61,15 +61,15 @@ export default function EditUser() {
         {/* FORM */}
         <form onSubmit={submit} className="space-y-6">
           {/* FULL NAME */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">
               Full Name
             </label>
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
-              <User className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap">
+              <User className="h-5 w-5 text-blue-600" />
               <input
                 type="text"
-                className="flex-1 bg-transparent outline-none text-gray-900"
+                className="flex-1 bg-transparent outline-none text-slate-900 placeholder-slate-400"
                 placeholder="Enter your name"
                 value={userData.name}
                 onChange={(e) =>
@@ -81,16 +81,16 @@ export default function EditUser() {
           </div>
 
           {/* EMAIL */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Email</label>
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
-              <Mail className="h-5 w-5 text-gray-500" />
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">Email</label>
+            <div className="field-wrap">
+              <Mail className="h-5 w-5 text-blue-600" />
               <input
                 type="email"
-                className="flex-1 bg-transparent outline-none text-gray-900"
+                className="flex-1 bg-transparent outline-none text-slate-900 placeholder-slate-400"
                 value={userData.email}
                 onChange={(e) =>
-                  setUserData({ ...userData, name: e.target.value })
+                  setUserData({ ...userData, email: e.target.value })
                 }
                 required
               />
@@ -98,31 +98,31 @@ export default function EditUser() {
           </div>
 
           {/* EMPLOYEE ID (READONLY) */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">
               Employee ID
             </label>
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-100 px-3 py-2">
-              <IdCard className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap bg-slate-100">
+              <IdCard className="h-5 w-5 text-slate-500" />
               <input
                 type="text"
                 readOnly
                 value={user?.id}
-                className="flex-1 bg-transparent outline-none text-gray-600 cursor-not-allowed"
+                className="flex-1 bg-transparent outline-none text-slate-600 cursor-not-allowed"
               />
             </div>
           </div>
 
           {/* CONTACT NUMBER */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">
               Contact Number
             </label>
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 transition">
-              <Phone className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap">
+              <Phone className="h-5 w-5 text-blue-600" />
               <input
                 type="text"
-                className="flex-1 bg-transparent outline-none text-gray-900"
+                className="flex-1 bg-transparent outline-none text-slate-900 placeholder-slate-400"
                 value={userData.contactNumber}
                 onChange={(e) =>
                   setUserData({ ...userData, contactNumber: e.target.value })
@@ -133,47 +133,47 @@ export default function EditUser() {
           </div>
 
           {/* CATEGORY (READONLY) */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">
               Category
             </label>
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-100 px-3 py-2">
-              <Building2 className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap bg-slate-100">
+              <Building2 className="h-5 w-5 text-slate-500" />
               <input
                 type="text"
                 readOnly
                 value={user?.category}
-                className="flex-1 bg-transparent outline-none text-gray-600 cursor-not-allowed"
+                className="flex-1 bg-transparent outline-none text-slate-600 cursor-not-allowed"
               />
             </div>
           </div>
 
           {/* DISTRICT (READONLY) */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">
               District
             </label>
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-100 px-3 py-2">
-              <MapPin className="h-5 w-5 text-gray-500" />
+            <div className="field-wrap bg-slate-100">
+              <MapPin className="h-5 w-5 text-slate-500" />
               <input
                 type="text"
                 readOnly
                 value={user?.district}
-                className="flex-1 bg-transparent outline-none text-gray-600 cursor-not-allowed"
+                className="flex-1 bg-transparent outline-none text-slate-600 cursor-not-allowed"
               />
             </div>
           </div>
 
           {/* DEPO (READONLY) */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Depo</label>
-            <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-100 px-3 py-2">
-              <Landmark className="h-5 w-5 text-gray-500" />
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-slate-700">Depo</label>
+            <div className="field-wrap bg-slate-100">
+              <Landmark className="h-5 w-5 text-slate-500" />
               <input
                 type="text"
                 readOnly
                 value={user?.depo}
-                className="flex-1 bg-transparent outline-none text-gray-600 cursor-not-allowed"
+                className="flex-1 bg-transparent outline-none text-slate-600 cursor-not-allowed"
               />
             </div>
           </div>
@@ -182,7 +182,7 @@ export default function EditUser() {
           <button
             disabled={isLoading}
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:cursor-pointer"
+            className="w-full btn-primary py-3"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">

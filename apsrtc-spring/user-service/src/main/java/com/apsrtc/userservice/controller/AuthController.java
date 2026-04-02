@@ -4,6 +4,7 @@ import com.apsrtc.userservice.dto.*;
 import com.apsrtc.userservice.security.JwtUtil;
 import com.apsrtc.userservice.service.DutyService;
 import com.apsrtc.userservice.service.TokenBlacklistService;
+import com.apsrtc.userservice.service.UserService;
 import com.apsrtc.userservice.utils.AuthResponse;
 import com.apsrtc.userservice.utils.DutyResponse;
 import com.apsrtc.userservice.utils.UserResponse;
@@ -11,9 +12,8 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import com.apsrtc.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,18 +26,16 @@ public class AuthController {
     private final UserService userService;
     private final DutyService dutyService;
     private final TokenBlacklistService tokenBlacklistService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<?> handleRegister(@Valid @RequestBody UserRequestDTO dto) {
+    public ResponseEntity<UserResponseDTO> handleRegister(@Valid @RequestBody UserRequestDTO dto) {
         UserResponseDTO responseDTO = userService.createUser(dto);
-        return ResponseEntity.ok("User created successfully!");
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> handleLogin(@RequestBody LoginRequestDTO dto) {
+    public ResponseEntity<?> handleLogin(@Valid @RequestBody LoginRequestDTO dto) {
         UserResponseDTO responseDTO = userService.handleLogin(dto);
         String token = jwtUtil.generateToken(responseDTO);
         AuthResponse authResponse = new AuthResponse(token, responseDTO);
@@ -51,10 +49,14 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<String> handleLogout(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        Claims claims = jwtUtil.getClaims(header);
-        long expiryTimeMillis = claims.getExpiration().getTime();
-        tokenBlacklistService.addToken(header.substring(7), expiryTimeMillis);
-        return ResponseEntity.ok("Logged out successfully");
+        try {
+            Claims claims = jwtUtil.getClaims(header);
+            long expiryTimeMillis = claims.getExpiration().getTime();
+            tokenBlacklistService.addToken(header.substring(7), expiryTimeMillis);
+            return ResponseEntity.ok("Logged out successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing or invalid Authorization header");
+        }
     }
 
     @PostMapping("/forgot-password")

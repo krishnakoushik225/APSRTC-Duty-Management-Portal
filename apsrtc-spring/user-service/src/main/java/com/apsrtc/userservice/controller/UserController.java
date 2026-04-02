@@ -4,18 +4,14 @@ import com.apsrtc.userservice.dto.DutyResponseDTO;
 import com.apsrtc.userservice.dto.LeaveResponseDTO;
 import com.apsrtc.userservice.dto.UpdatePasswordDTO;
 import com.apsrtc.userservice.dto.UserResponseDTO;
-import com.apsrtc.userservice.mapper.DutyMapper;
-import com.apsrtc.userservice.model.*;
-import com.apsrtc.userservice.repository.LoginHistoryRepository;
-import com.apsrtc.userservice.repository.PreviousDutyRepository;
+import com.apsrtc.userservice.model.Leave;
 import jakarta.validation.Valid;
 import com.apsrtc.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 
 @RestController
@@ -25,9 +21,6 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
-    private final LoginHistoryRepository loginHistoryRepo;
-    private final PreviousDutyRepository prevDutyRepo;
-    private final DutyMapper dutyMapper;
 
     @PutMapping("/change-password")
     public ResponseEntity<UserResponseDTO> updatePassword(
@@ -38,17 +31,31 @@ public class UserController {
     }
 
     @PostMapping("/leave-request")
-    public ResponseEntity<LeaveResponseDTO> leaveRequest(@Valid @RequestBody Leave dto) {
-        return userService.leaveRequest(dto);
+    public ResponseEntity<LeaveResponseDTO> leaveRequest(
+            @AuthenticationPrincipal String userId,
+            @Valid @RequestBody Leave dto) {
+        return userService.leaveRequest(dto, userId);
     }
 
     @GetMapping("/{id}/current-duty")
-    public ResponseEntity<DutyResponseDTO> getCurrentDuty(@Valid @PathVariable String id) {
+    public ResponseEntity<DutyResponseDTO> getCurrentDuty(
+            @PathVariable String id,
+            @AuthenticationPrincipal String userId) {
+        assertSelfAccess(id, userId);
         return ResponseEntity.ok(userService.getCurrentDuty(id));
     }
 
     @GetMapping("/{id}/previous-duty")
-    public ResponseEntity<DutyResponseDTO> getPreviousDuty(@Valid @PathVariable String id) {
+    public ResponseEntity<DutyResponseDTO> getPreviousDuty(
+            @PathVariable String id,
+            @AuthenticationPrincipal String userId) {
+        assertSelfAccess(id, userId);
         return ResponseEntity.ok(userService.getPreviousDuty(id));
+    }
+
+    private static void assertSelfAccess(String pathUserId, String authenticatedUserId) {
+        if (authenticatedUserId == null || !authenticatedUserId.equals(pathUserId)) {
+            throw new AccessDeniedException("You can only access your own duty information");
+        }
     }
 }

@@ -71,22 +71,23 @@ public class UserService {
     }
 
     public ResponseEntity<Map<String, String>> forgotPassword(String email) {
+        String genericAck = "If an account exists for this email, you will receive an OTP shortly.";
         if (!userRepo.existsByEmail(email)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "Email not found. Please register!"));
+            log.info("Password reset requested for unknown email (no enumeration)");
+            return ResponseEntity.ok(Map.of("message", genericAck));
         }
         String otp = otpService.generateOtp(email);
         try {
             emailService.sendOtpEmail(email, otp);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("Failed to send OTP email", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Error sending email. Please try again later."));
         }
         String resetToken = resetTokenService.generateTokenForPasswordReset(email, "password_reset");
-        return ResponseEntity.ok(
-                Map.of("message", "OTP sent successfully!","resetToken", resetToken)
-        );
+        return ResponseEntity.ok(Map.of(
+                "message", "OTP sent successfully!",
+                "resetToken", resetToken));
     }
 
     public ResponseEntity<Map<String, String>> validateOtp(String token, String otp) {
@@ -112,12 +113,20 @@ public class UserService {
             return ResponseEntity.badRequest().body("Password and Confirm password didn’t match!");
         }
         User user = userRepo.findByEmailIgnoreCase(email);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No user found for this reset session.");
+        }
         user.setPassword(passwordEncoder.encode(dto.getConfirmPassword()));
         userRepo.save(user);
         return ResponseEntity.ok("Password changed successfully!");
     }
 
-    public ResponseEntity<LeaveResponseDTO> leaveRequest(Leave dto) {
+    public ResponseEntity<LeaveResponseDTO> leaveRequest(Leave dto, String authenticatedUserId) {
+        User user = userRepo.findById(authenticatedUserId)
+                .orElseThrow(() -> new UserOperationException("User not found with ID: " + authenticatedUserId));
+        dto.setUserId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
         return leaveService.handleLeaveRequest(dto);
     }
 

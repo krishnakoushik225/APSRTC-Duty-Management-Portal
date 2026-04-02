@@ -42,22 +42,23 @@ export default function Dashboard() {
       .toUpperCase() || "U";
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <div className="max-w-6xl mx-auto space-y-10">
-        <div className="mx-10 flex flex-col md:flex-row items-start md:items-center justify-between">
-          <header className="space-y-1">
-            <p className="text-gray-600 text-xl font-semibold">
+        <div className="mx-2 md:mx-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <header className="space-y-2">
+            <p className="text-slate-600 text-xl font-semibold">
               Welcome back, {" "}
-              <span className="font-semibold text-blue-700">{`Mr. `+user?.name}</span>
+              <span className="font-extrabold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent text-2xl">{user?.name}</span>
             </p>
+            <p className="text-slate-500 font-medium">Here's your duty overview and recent activities</p>
           </header>
 
           <a
             href="/user/leave-request"
-            className="mt-4 md:mt-0 bg-blue-600 text-white p-3 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition"
+            className="btn-primary px-6 py-4 text-sm"
           >
             Apply for Leave
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </a>
         </div>
 
@@ -65,7 +66,7 @@ export default function Dashboard() {
         <UserProfile user={user} initials={initials} />
 
         {/* DUTY GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Current DUTY */}
           <DutyCard
             title="Current Duty Details"

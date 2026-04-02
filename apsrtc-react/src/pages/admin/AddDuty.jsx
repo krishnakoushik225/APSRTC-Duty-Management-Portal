@@ -34,9 +34,16 @@ export default function AddDuty({ admin }) {
         endTime: "",
         busType: "",
       });
-      setIsLoading(false);
     } catch (err) {
-      toast.error(err.response.data.message || err.response?.data);
+      const payload = err?.response?.data;
+      const message =
+        payload?.message ||
+        payload?.error ||
+        (typeof payload === "string" ? payload : Object.values(payload || {})[0]) ||
+        "Failed to save duty";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -47,9 +54,15 @@ export default function AddDuty({ admin }) {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center -mt-10">
-      <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-        <h2 className="text-center text-2xl font-semibold mb-8">Add Duty</h2>
+    <div className="min-h-screen p-6">
+      <div className="w-full max-w-3xl mx-auto">
+        <div className="card p-10">
+        <h2 className="text-center text-3xl font-extrabold tracking-tight mb-2 text-slate-900">
+          Add Duty
+        </h2>
+        <p className="text-center text-slate-500 font-medium mb-8">
+          Create a duty slot for your depot.
+        </p>
 
         <form onSubmit={submit} className="grid grid-cols-2 gap-6">
           {/* District */}
@@ -139,7 +152,7 @@ export default function AddDuty({ admin }) {
           <button
             disabled={isLoading}
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-3 rounded-lg text-lg font-semibold shadow-md hover:cursor-pointer"
+            className="w-full btn-primary py-3 text-base"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
@@ -151,6 +164,7 @@ export default function AddDuty({ admin }) {
             )}
           </button>
         </form>
+        </div>
       </div>
     </div>
   );
@@ -159,17 +173,17 @@ export default function AddDuty({ admin }) {
 function InputRow({ icon: Icon, label, value, onChange, type = "text", min }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
 
-      <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2">
-        <Icon className="h-5 w-5 text-gray-500" />
+      <div className="field-wrap">
+        <Icon className="h-5 w-5 text-slate-500" />
         <input
           type={type}
           min={min}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           required
-          className="flex-1 bg-transparent outline-none"
+          className="flex-1 bg-transparent outline-none text-slate-900"
         />
       </div>
     </div>
@@ -187,22 +201,22 @@ function SelectRow({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
 
-      <div className="flex items-center gap-3 border border-gray-300 rounded-lg bg-gray-50 px-3 py-2">
-        <Icon className="h-5 w-5 text-gray-500" />
+      <div className="field-wrap">
+        <Icon className="h-5 w-5 text-slate-500" />
 
         {readOnly ? (
           <input
             value={value}
             readOnly
-            className="flex-1 bg-transparent outline-none text-gray-900"
+            className="flex-1 bg-transparent outline-none text-slate-900"
           />
         ) : (
           <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="flex-1 bg-transparent outline-none text-gray-900"
+            className="flex-1 bg-transparent outline-none text-slate-900"
             required
           >
             <option value="">Select {label}</option>

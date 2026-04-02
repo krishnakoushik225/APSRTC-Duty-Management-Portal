@@ -1,0 +1,27 @@
+name: APSRTC backend CI
+
+on:
+  push:
+    paths:
+      - "apsrtc-spring/**"
+      - ".github/workflows/apsrtc-backend-ci.yml"
+  pull_request:
+    paths:
+      - "apsrtc-spring/**"
+      - ".github/workflows/apsrtc-backend-ci.yml"
+
+jobs:
+  verify-user-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Maven verify (unit + integration)
+        working-directory: apsrtc-spring
+        run: chmod +x mvnw && ./mvnw -B verify -pl user-service

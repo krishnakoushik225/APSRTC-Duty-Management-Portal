@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LeaveRepository extends JpaRepository<Leave, String> {
+public interface LeaveRepository extends JpaRepository<Leave, Long> {
     boolean existsByUserId(String userId);
     Leave findByUserId(String userId);
     List<Leave> findByStatus(String status);

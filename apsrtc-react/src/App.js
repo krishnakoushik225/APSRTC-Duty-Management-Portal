@@ -34,7 +34,7 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="app-shell">
       <Navbar notificationCount={pendingLeaves.length} />
       <ToastContainer
         position="top-right"

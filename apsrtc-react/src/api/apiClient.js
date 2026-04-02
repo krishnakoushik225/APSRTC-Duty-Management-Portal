@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:3000";
+// For local development, React runs at http://localhost:3000 while backend runs at http://localhost:5251.
+// For production, set REACT_APP_API_URL to your real API endpoint.
+// If proxy does not work, fallback to explicit backend URL.
+const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:5251";
 
 const api = axios.create({ baseURL: API_BASE });
 
@@ -43,12 +46,13 @@ api.interceptors.request.use((config) => {
 const apiClient = {
   login: (creds) => api.post("/auth/login", creds).then((res) => res.data),
 
-  register: (creds) => api.post("auth/register", creds).then((res) => res.data),
+  // fixed missing slash in path (was `auth/register` which resolves wrongly as `.../auth/register` without base slash)
+  register: (creds) => api.post("/auth/register", creds).then((res) => res.data),
 
   logout: () => api.post("/auth/logout").then((res) => res.data),
 
   forgotPassword: (email) =>
-    api.post("auth/forgot-password", { email }).then((res) => res.data),
+    api.post("/auth/forgot-password", { email }).then((res) => res.data),
 
   validateOtp: (otp, email) =>
     api.post("/auth/verify-otp", { otp, email }).then((res) => res.data),
@@ -73,7 +77,7 @@ const apiClient = {
 
   searchUsers: (keyword) =>
     api
-      .get(`/admin/dashboard/search?keyword=${keyword}`)
+      .get(`/admin/users/search?keyword=${encodeURIComponent(keyword)}`)
       .then((res) => res.data),
 
   AddDuty: (duty) =>
@@ -83,7 +87,7 @@ const apiClient = {
     api.get("/admin/leaves/pending").then((res) => res.data),
 
   applyLeave: (payload) =>
-    api.post(`/user/leave-request`, payload).then((res) => res.length),
+    api.post(`/user/leave-request`, payload).then((res) => res.data),
 
   approveLeave: (id) =>
     api.put(`/admin/leaves/${id}/approve`).then((res) => res.data),
