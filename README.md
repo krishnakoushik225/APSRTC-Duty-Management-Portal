@@ -32,7 +32,6 @@ Secure workforce and duty-management platform for APSRTC-style operations, built
 - [Production Readiness Checklist](#production-readiness-checklist)
 - [Security Notes](#security-notes)
 - [Contributing](#contributing)
-- [Roadmap](#roadmap)
 
 ## Product Summary
 
@@ -77,13 +76,13 @@ Extra screen:
 ```mermaid
 flowchart TB
   subgraph Clients
-    U[Employee / Admin]
-    FE[React SPA\nlocalhost:3000]
+    U["Employee / Admin"]
+    FE["React SPA<br/>localhost:3000"]
   end
 
   subgraph Backend
-    API[Spring Boot API\nlocalhost:5251]
-    SEC[Security Filters\nJWT + RequestContext + Idempotency]
+    API["Spring Boot API<br/>localhost:5251"]
+    SEC["Security Filters<br/>JWT, RequestContext, Idempotency"]
     SVC[Service Layer]
   end
 
@@ -177,8 +176,8 @@ Admin submits Add User with Idempotency-Key
 flowchart LR
   subgraph Security
     F1[JwtAuthenticationFilter]
-    F2[RequestContextFilter\n(correlation + login rate limit)]
-    F3[IdempotencyFilter\n(selected admin writes)]
+    F2["RequestContextFilter<br/>correlation, login rate limit"]
+    F3["IdempotencyFilter<br/>selected admin writes"]
   end
 
   subgraph API_Layer
@@ -631,10 +630,3 @@ npm test
 docker compose up -d
 curl -s http://localhost:5251/actuator/health
 ```
-
-## Roadmap
-
-- Support login by employee ID **or** email to match UI copy.
-- Add frontend CI workflow.
-- Add API examples (request/response payload samples) in docs.
-- Add load/perf baseline and SLO targets.
