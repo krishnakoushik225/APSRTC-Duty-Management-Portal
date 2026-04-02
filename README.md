@@ -1,6 +1,6 @@
 # APSRTC Duty Management Portal
 
-Secure workforce and duty-management platform for APSRTC-style operations, built with a React SPA and a Spring Boot backend backed by PostgreSQL.
+Duty management portal: React SPA, Spring Boot API, PostgreSQL.
 
 <p align="center">
   <img src="https://img.shields.io/badge/Backend-Spring%20Boot-6DB33F?logo=springboot&logoColor=white" alt="Spring Boot"/>
@@ -10,28 +10,131 @@ Secure workforce and duty-management platform for APSRTC-style operations, built
   <img src="https://img.shields.io/badge/Infra-Docker-2496ED?logo=docker&logoColor=white" alt="Docker"/>
 </p>
 
+Source: [github.com/krishnakoushik225/APSRTC-Duty-Management-Portal](https://github.com/krishnakoushik225/APSRTC-Duty-Management-Portal)
+
 ## Table of Contents
 
+- [Run locally](#run-locally)
 - [Product Summary](#product-summary)
 - [Product UI (Screenshots)](#product-ui-screenshots)
 - [Architecture](#architecture)
   - [System Design](#system-design)
   - [Runtime Request Flow](#runtime-request-flow)
   - [Backend Module Design](#backend-module-design)
-- [Tech Stack](#tech-stack)
-- [Compatibility Matrix](#compatibility-matrix)
-- [Repository Layout](#repository-layout)
-- [Quick Start (Recommended: Docker)](#quick-start-recommended-docker)
-- [Quick Start (Host Run)](#quick-start-host-run)
+- [Stack & versions](#stack--versions)
+- [Repository layout](#repository-layout)
 - [Configuration Reference](#configuration-reference)
 - [API Quick Contract](#api-quick-contract)
+- [API Payload Examples](#api-payload-examples)
 - [Operational Endpoints](#operational-endpoints)
 - [Testing](#testing)
-- [End-to-End Smoke Test](#end-to-end-smoke-test)
 - [Troubleshooting](#troubleshooting)
 - [Production Readiness Checklist](#production-readiness-checklist)
 - [Security Notes](#security-notes)
 - [Contributing](#contributing)
+
+## Run locally
+
+You need two processes: the **API** (Docker or your JVM) and the **React dev server** on your machine. The frontend dev server proxies API calls to `http://localhost:5251` (see `apsrtc-react/package.json`).
+
+### Prerequisites
+
+| Path | What you need |
+|------|----------------|
+| **Docker (recommended)** | Docker Desktop (or Docker Engine + Compose v2), Node.js 18+ |
+| **Host JVM** | JDK 17+, Node.js 18+, PostgreSQL you can reach from your machine, Maven via `apsrtc-spring/mvnw` |
+
+### Get the code
+
+```bash
+git clone https://github.com/krishnakoushik225/APSRTC-Duty-Management-Portal.git
+cd APSRTC-Duty-Management-Portal
+```
+
+If you use a fork, clone that URL instead and `cd` into the folder Git creates.
+
+### With Docker (recommended)
+
+From the repository root:
+
+1. **Start API and database**
+
+   ```bash
+   docker compose up --build -d
+   ```
+
+2. **Check the API**
+
+   ```bash
+   curl -s http://localhost:5251/actuator/health
+   ```
+
+   You should see JSON with `"status":"UP"`.
+
+3. **Start the UI** (new terminal, from repo root)
+
+   ```bash
+   cd apsrtc-react
+   npm install
+   npm start
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000). Register or log in with an **employee ID** (not email) and password—see [Login by email fails](#login-by-email-fails).
+
+5. **Stop**
+
+   ```bash
+   docker compose down
+   ```
+
+   Wipe DB volume:
+
+   ```bash
+   docker compose down -v
+   ```
+
+### With local PostgreSQL + JVM
+
+Use this when you want Spring Boot on your machine instead of the `user-service` container.
+
+1. **Create an empty database** (name `apsrtc`, or change `DB_URL` to match). Example:
+
+   ```bash
+   psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE apsrtc;"
+   ```
+
+2. **Export environment variables** (match your DB user and password):
+
+   ```bash
+   export DB_URL="jdbc:postgresql://localhost:5432/apsrtc"
+   export DB_USERNAME="postgres"
+   export DB_PASSWORD="<your_db_password>"
+   export JWT_SECRET="<at_least_32_characters>"
+   export MAIL_USERNAME="<smtp_user_or_placeholder>"
+   export MAIL_PASSWORD="<smtp_pass_or_placeholder>"
+   export PORT=5251
+   ```
+
+3. **Start the API**
+
+   ```bash
+   cd apsrtc-spring
+   bash mvnw -pl user-service spring-boot:run
+   ```
+
+   On macOS, if `./mvnw` fails with “operation not permitted”, use `bash mvnw` after `xattr -cr .` in `apsrtc-spring` (see [Troubleshooting](#troubleshooting)).
+
+4. **Start the UI**
+
+   ```bash
+   cd ../apsrtc-react
+   npm install
+   npm start
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) and verify [http://localhost:5251/actuator/health](http://localhost:5251/actuator/health).
+
+More env vars: [Configuration Reference](#configuration-reference).
 
 ## Product Summary
 
@@ -41,7 +144,7 @@ This portal supports:
 - Admin workflows: user onboarding, duty assignment, leave review.
 - Employee workflows: current/previous duty views and leave requests.
 - OTP-based forgot-password flow.
-- Production-oriented backend patterns: Flyway migrations, actuator probes, rate limiting, idempotency for critical admin write paths.
+- Backend: Flyway migrations, Actuator health, login rate limits, idempotent admin writes (where enabled).
 
 ## Product UI (Screenshots)
 
@@ -59,15 +162,13 @@ This portal supports:
 | Admin dashboard | ![Admin dashboard](docs/ui/03-admin-dashboard.png) |
 | Add user | ![Add user](docs/ui/04-add-user.png) |
 | Add duty | ![Add duty](docs/ui/05-add-duty.png) |
+| Pending leaves | ![Pending leave](docs/ui/07-pending-leave.png) |
 
 ### Profile
 
 | Screen | Preview |
 |---|---|
 | User profile | ![User profile](docs/ui/06-user-profile.png) |
-
-Extra screen:
-- Pending leave list: ![Pending leave](docs/ui/07-pending-leave.png)
 
 ## Architecture
 
@@ -228,58 +329,27 @@ flowchart LR
 ### Design Decisions
 
 - **Flyway owns schema**: app uses `ddl-auto=validate` to prevent runtime schema drift.
-- **Dev profile simplicity**: no Redis required for local setup; memory implementations keep setup friction low.
 - **Selective idempotency**: enabled for high-impact admin POST operations to prevent duplicate writes.
 
-### Runtime Notes
+`dev` vs `prod` behavior (Redis, OTLP) is summarized under [Configuration Reference](#configuration-reference).
 
-- Frontend dev proxy targets `http://localhost:5251`.
-- Backend default profile is `dev`.
-- `dev` profile uses in-memory token blacklist/rate limit backend (no Redis required).
-- `prod` profile expects Redis and OTLP config.
+## Stack & versions
 
-## Tech Stack
-
-### Backend (`apsrtc-spring/user-service`)
-
-- Java 17+
-- Spring Boot 3.5.6
-- Spring Security (JWT)
-- Spring Data JPA + Hibernate
-- Flyway
-- Actuator + Micrometer OTLP
-- Maven wrapper (`mvnw`)
-
-### Frontend (`apsrtc-react`)
-
-- React 19 (CRA + CRACO)
-- React Router 7
-- TanStack React Query 5
-- Axios
-- Tailwind CSS
-- MUI / Flowbite
-
-### Data / Infra
-
-- PostgreSQL 16
-- Docker / Docker Compose
-
-## Compatibility Matrix
-
-| Component | Version used in this repo |
-|---|---|
-| Java | 17+ (tested with 21 locally) |
-| Maven | Wrapper (`mvnw`) |
-| Node.js | Modern LTS recommended |
-| React | 19.2.0 |
+| Piece | Notes |
+|------|--------|
+| Java | 17+ (CI/local often use 21) |
 | Spring Boot | 3.5.6 |
-| PostgreSQL | 16 (compose image) |
-| Docker Compose | v2+ |
+| Node.js | 18+ LTS for `apsrtc-react` |
+| React | 19.x (CRA + CRACO) |
+| PostgreSQL | 16 (Docker image in compose) |
+| Build | Maven wrapper `apsrtc-spring/mvnw` |
 
-## Repository Layout
+**Libraries:** Spring Security (JWT), Spring Data JPA, Flyway, Actuator + Micrometer OTLP, React Router 7, TanStack Query 5, Axios, Tailwind, MUI, Flowbite.
+
+## Repository layout
 
 ```text
-APSRTC/
+APSRTC-Duty-Management-Portal/
 ├── README.md
 ├── docker-compose.yml
 ├── docs/
@@ -297,84 +367,6 @@ APSRTC/
     └── apsrtc-backend-ci.yml
 ```
 
-## Quick Start (Recommended: Docker)
-
-### Prerequisites
-
-- Docker Desktop running
-- Node.js installed
-
-### 1) Start backend + DB
-
-```bash
-cd /Users/krishnakoushikunnam/Documents/Projects/APSRTC
-docker compose up --build -d
-```
-
-### 2) Verify backend
-
-```bash
-curl -s http://localhost:5251/actuator/health
-```
-
-Expected:
-
-```json
-{"status":"UP","groups":["liveness","readiness"]}
-```
-
-### 3) Start frontend
-
-```bash
-cd apsrtc-react
-npm install
-npm start
-```
-
-Open `http://localhost:3000`.
-
-### 4) Stop
-
-```bash
-docker compose down
-```
-
-Reset data:
-
-```bash
-docker compose down -v
-```
-
-## Quick Start (Host Run)
-
-Use this if you want backend on host and Postgres local.
-
-### 1) Export env vars in one terminal
-
-```bash
-export DB_URL="jdbc:postgresql://localhost:5432/apsrtc"
-export DB_USERNAME="postgres"
-export DB_PASSWORD="<your_real_password>"
-export JWT_SECRET="<min_32_char_secret>"
-export MAIL_USERNAME="<smtp_user_or_placeholder>"
-export MAIL_PASSWORD="<smtp_pass_or_placeholder>"
-export PORT=5251
-```
-
-### 2) Start backend
-
-```bash
-cd apsrtc-spring
-bash mvnw -pl user-service spring-boot:run
-```
-
-### 3) Start frontend
-
-```bash
-cd ../apsrtc-react
-npm start
-```
-
 ## Configuration Reference
 
 | Variable | Required | Purpose |
@@ -390,8 +382,8 @@ npm start
 
 ### Profile behavior
 
-- `dev`: no Redis auto-config; in-memory security auxiliaries.
-- `prod`: Redis-backed blacklist/rate-limiting and OTLP endpoints.
+- **`dev`** (default for local work, including Docker Compose): no Redis required; in-memory token blacklist and rate limiting; Flyway runs on startup.
+- **`prod`**: expects Redis (blacklist, rate limits, idempotency where configured) and OTLP settings if metrics export is enabled.
 
 ## API Quick Contract
 
@@ -432,7 +424,7 @@ npm start
 
 ## API Payload Examples
 
-> Examples are representative for local/dev and may include extra fields depending on role and endpoint logic.
+> Shapes only; real responses may include more fields.
 
 ### 1) Login (`POST /auth/login`)
 
@@ -452,8 +444,8 @@ Response (200):
   "token": "<jwt>",
   "user": {
     "id": "2026BCS01",
-    "name": "Krishna Koushik",
-    "email": "koushik@example.com",
+    "name": "Ada Admin",
+    "email": "ada.admin@example.com",
     "category": "ADMIN",
     "district": "Prakasam",
     "depo": "Ongole"
@@ -509,9 +501,9 @@ Response (201/200):
 ```json
 {
   "leaveId": 101,
-  "name": "Krishna Koushik",
+  "name": "Jane Employee",
   "userId": "2026BCS01",
-  "email": "koushik@example.com",
+  "email": "jane.employee@example.com",
   "reason": "Medical leave",
   "fromDate": "2026-04-05",
   "toDate": "2026-04-07",
@@ -543,16 +535,6 @@ GitHub workflow runs:
 ```bash
 ./mvnw -B verify -pl user-service
 ```
-
-## End-to-End Smoke Test
-
-After backend + frontend are up:
-
-1. Open `http://localhost:3000`.
-2. Create a user via register (or admin add-user).
-3. Login with employee ID + password.
-4. Verify dashboard loads.
-5. Hit `http://localhost:5251/actuator/health` and confirm `UP`.
 
 ## Troubleshooting
 
@@ -608,25 +590,4 @@ Current backend login resolves user by `id` (employee ID). Use employee ID for n
 
 ## Contributing
 
-Before opening a PR:
-
-1. Run backend tests:
-
-```bash
-cd apsrtc-spring
-bash mvnw -B test -pl user-service
-```
-
-2. Run frontend tests:
-
-```bash
-cd apsrtc-react
-npm test
-```
-
-3. Validate Docker bring-up:
-
-```bash
-docker compose up -d
-curl -s http://localhost:5251/actuator/health
-```
+Before opening a PR: run the [Testing](#testing) commands, `npm test` in `apsrtc-react`, then `docker compose up -d` from the repo root and confirm `GET http://localhost:5251/actuator/health` returns `UP`.

@@ -1,11 +1,11 @@
 # Local full-stack backend test: Postgres + user-service (Spring Boot, dev profile).
 # Frontend still runs on your machine: npm start in apsrtc-react (API at http://localhost:5251).
 #
-# Usage from repo root (APSRTC/):
+# Usage from repository root:
 #   docker compose up --build
 #
-# Database only (then run Spring locally with DB_URL=jdbc:postgresql://localhost:5432/apsrtc):
-#   docker compose up postgres -d
+# Postgres is not published to the host by default. To run Spring on your machine, use a local
+# PostgreSQL instance (see README "With local PostgreSQL + JVM") or add ports: ["5432:5432"] here.
 
 services:
   postgres:
